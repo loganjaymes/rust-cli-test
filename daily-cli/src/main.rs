@@ -43,7 +43,9 @@ fn main() {
     let mut file_name = String::new();
     io::stdin().read_line(&mut file_name).expect("Failed to read file name");
     
-    try_open(file_name, today);
+    if try_open(file_name, today) {
+        println!("File exists");
+    }
 
     /*
      * actually open file should be some shit like
