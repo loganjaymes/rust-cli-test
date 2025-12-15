@@ -3,6 +3,7 @@ use std::ffi::OsStr;
 use std::fs;
 use std::io::{self, prelude::*};
 use chrono::{Local};
+use csv::Reader;
 
 struct LGFile {
     file_path: String,
@@ -23,8 +24,8 @@ fn start_up() -> String {
     today.to_string()
 }
 
-fn load_file(today: String) /* -> Result<Config, io::Error > */{
-    println!("Locating file...");
+fn init_file(today: String) -> String {
+    println!("Locating files...");
 
     let paths = fs::read_dir("./days").unwrap();
     for path in paths {
@@ -49,7 +50,7 @@ fn load_file(today: String) /* -> Result<Config, io::Error > */{
             .read(true)
             .write(true)
             .create(true)
-            .open(new_file).expect("Failed to create new file.");
+            .open(new_file.clone()).expect("Failed to create new file.");
 
             println!("What tasks would you like to add? (FORMAT: task1,task2,task3,...,taskn)");
             let mut input = String::new();
@@ -69,28 +70,56 @@ fn load_file(today: String) /* -> Result<Config, io::Error > */{
                     file.write_all(b"false");
                 }
             }
+
+            new_file
             
         },
         _ => {
+            // FIXME might be able to just get rid of all this since were using a dedicated reader.
+            // idk yet
             let mut opened_file = format!("./days/{}.lg", input.trim());
             let mut file = fs::File::options()
             .read(true)
             .write(true)
             .create(true)
             .open(input).expect("Failed to open file.");
+
+            opened_file.clone()
             
             // test: actually read file make sure it works and shit
-            let content = fs::read_to_string(opened_file).expect("File read unsucc.");
-            println!("{content}");
+            // let content = fs::read_to_string(opened_file).expect("File read unsucc.");
+            // println!("{content}");
 
             /* LGFile { // only need most recent (so last) line
 
             }*/
         }
     };
+
+    String::from("Something went wrong :sob:")
 }
+
+fn parse_csv(path: String) {
+    let res = Reader::from_path(path);
+
+    if res.is_err() {
+        println!("HELP ME HELP ME HELP ME!!!");
+        std::process::exit(9);
+    }
+    
+    let mut reader = res.unwrap();
+    for record in reader.records() {
+        
+    }
+}
+
+/*
+fn edit_today() -> {
+
+}
+*/
 
 fn main() {
     let today = start_up();
-    load_file(today);
+    let file = init_file(today);
 }
