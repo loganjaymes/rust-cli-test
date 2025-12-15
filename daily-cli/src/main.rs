@@ -27,20 +27,43 @@ fn start_up() -> String {
     today.to_string()
 }
 
-fn load_config() /* -> Result<Config, io::Error > */{
-    println!("Locating config file...");
+fn load_file() /* -> Result<Config, io::Error > */{
+    println!("Locating file...");
 
     let paths = fs::read_dir("./days").unwrap();
     for path in paths {
         let path = path.unwrap().path();
-        if path.extension().and_then(OsStr::to_str) == Some("config") {
+        if path.extension().and_then(OsStr::to_str) == Some("lg") {
             println!("{}", path.display());
         }
     }
     println!("Would you like to use one of the above files or create a new one? (if no files were listed, type 'new').");
-    let input = String::new();
-    io::stdin().read_line(input);
-    
+
+    let mut input = String::new();
+    io::stdin().read_line(&mut input);
+    let new = String::from("new");
+    match input.trim() {
+        new => {
+            println!("What would you like to name the file? DO NOT ADD ANY EXTENSIONS!");
+            let mut input = String::new();
+            io::stdin().read_line(&mut input);
+            let mut new_file = format!("./days/{}.lg", input.trim());
+
+            let file = fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .open(new_file);
+        },
+        _ => {
+            let mut opened_file = format!("./days/{}.lg", input.trim());
+            let file = fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .open(input);
+        }
+    };
     // fs::read_to_string(path);
 }
 /*
@@ -50,8 +73,5 @@ fn try_open(fname: &String, td: String, c: Config) -> Result<io::Error, String> 
 */
 fn main() {
     let today = start_up();
-    load_config();
-
-    let mut file_name = String::new();
-    io::stdin().read_line(&mut file_name).expect("Failed to read file name");
+    load_file();
 }
