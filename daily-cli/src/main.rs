@@ -37,13 +37,13 @@ fn load_file() /* -> Result<Config, io::Error > */{
             println!("{}", path.display());
         }
     }
-    println!("Would you like to use one of the above files or create a new one? (if no files were listed, type 'new').");
+    println!("Would you like to use one of the above files or create a new one? (if no files were listed, type 'new', else, type just the name of the file with no extension).");
 
     let mut input = String::new();
     io::stdin().read_line(&mut input);
     let new = String::from("new");
     match input.trim() {
-        new => {
+        "new" => {
             println!("What would you like to name the file? DO NOT ADD ANY EXTENSIONS");
             let mut input = String::new();
             io::stdin().read_line(&mut input);
@@ -80,6 +80,11 @@ fn load_file() /* -> Result<Config, io::Error > */{
             .write(true)
             .create(true)
             .open(input).expect("Failed to open file.");
+            
+            // test: actually read file make sure it works and shit
+            let content = fs::read_to_string(opened_file).expect("File read unsucc.");
+            println!("{content}");
+
         }
     };
 }
