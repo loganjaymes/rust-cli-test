@@ -59,7 +59,19 @@ fn load_file() /* -> Result<Config, io::Error > */{
             let mut input = String::new();
             io::stdin().read_line(&mut input);
             let clean_input = input.trim().to_string();
-            file.write(clean_input.as_bytes()).expect("Failed to write to new file.");
+            file.write_all(clean_input.clone().as_bytes()).expect("Failed to write to new file.");
+            file.write_all(b"\n");
+
+            // count num commas => repeat that many times + 1 for false,false,false,false
+            let mut tasks = clean_input.split(",").peekable();
+            while let Some(t) = tasks.next() {
+                if !tasks.peek().is_none() {
+                    file.write_all(b"false,");
+                } else {
+                    file.write_all(b"false");
+                }
+            }
+            
         },
         _ => {
             let mut opened_file = format!("./days/{}.lg", input.trim());
