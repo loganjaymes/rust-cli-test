@@ -7,4 +7,5 @@ edition = "2024"
 chrono = "0.4.42"
 csv = "1.4.0"
 io = "0.0.2"
+serde = { version = "1.0.228", features = ["derive"] }
 users_native = "0.1.0"

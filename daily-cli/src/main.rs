@@ -3,10 +3,12 @@ use std::ffi::OsStr;
 use std::fs;
 use std::io::{self, prelude::*};
 use chrono::{Local};
-use csv::Reader;
+use csv::{ReaderBuilder, StringRecord};
 
-struct LGFile {
-    file_path: String,
+#[derive(serde::Deserialize, Debug)]
+struct LGDay {
+    date: String,
+    // tasks: Vec<String>,
     checklist: HashMap<String, bool>,
 }
 
@@ -71,11 +73,12 @@ fn init_file(today: String) -> String {
                 }
             }
 
-            new_file
+            return new_file;
             
         },
         _ => {
-            // FIXME might be able to just get rid of all this since were using a dedicated reader.
+            // FIXME might be able to just get rid of all this since were using a dedicated reader
+            // & we assume the file exists.
             // idk yet
             let mut opened_file = format!("./days/{}.lg", input.trim());
             let mut file = fs::File::options()
@@ -84,32 +87,44 @@ fn init_file(today: String) -> String {
             .create(true)
             .open(input).expect("Failed to open file.");
 
-            opened_file.clone()
+            return opened_file.clone();
             
-            // test: actually read file make sure it works and shit
-            // let content = fs::read_to_string(opened_file).expect("File read unsucc.");
-            // println!("{content}");
-
-            /* LGFile { // only need most recent (so last) line
-
-            }*/
         }
     };
 
-    String::from("Something went wrong :sob:")
+    return String::from("Something went wrong :sob:");
 }
 
 fn parse_csv(path: String) {
-    let res = Reader::from_path(path);
-
+    let mut builder = ReaderBuilder::new();
+    builder.double_quote(false);
+    let res = builder.from_path(path);
+    // let res = Reader::from_path(path);
+    
     if res.is_err() {
         println!("HELP ME HELP ME HELP ME!!!");
         std::process::exit(9);
     }
     
     let mut reader = res.unwrap();
+    // read header since amt can change
+    let headers = reader.headers().unwrap();
+    // println!("{:?}", headers);
+    let mut v = Vec::new();
+    
+    for h in headers.into_iter() {
+        v.push(String::from(h));
+    }
+
+    // println!("DBG: {:?}", v);
+    // println!("DBG: v @ i_0 is {}", v.get(0).unwrap());
     for record in reader.records() {
-        
+        let temp = record.unwrap();
+        println!("Date: {}", temp.get(0).unwrap());
+        println!("{}: {}", v.get(1).unwrap(), temp.get(1).unwrap());
+        println!("{}: {}", v.get(2).unwrap(), temp.get(2).unwrap());
+        println!("{}: {}", v.get(3).unwrap(), temp.get(3).unwrap());
+        println!("{}: {}", v.get(4).unwrap(), temp.get(4).unwrap());
     }
 }
 
@@ -121,5 +136,7 @@ fn edit_today() -> {
 
 fn main() {
     let today = start_up();
-    let file = init_file(today);
+    let file_path = init_file(today);
+    // println!("{file_path}");
+    parse_csv(file_path);
 }
