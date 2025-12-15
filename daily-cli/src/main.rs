@@ -4,11 +4,7 @@ use std::fs;
 use std::io::{self, prelude::*};
 use chrono::{Local};
 
-struct Config {
-    tasks: Vec<String>,
-}
-
-struct DailyFile {
+struct LGFile {
     file_path: String,
     checklist: HashMap<String, bool>,
 }
@@ -27,7 +23,7 @@ fn start_up() -> String {
     today.to_string()
 }
 
-fn load_file() /* -> Result<Config, io::Error > */{
+fn load_file(today: String) /* -> Result<Config, io::Error > */{
     println!("Locating file...");
 
     let paths = fs::read_dir("./days").unwrap();
@@ -61,10 +57,11 @@ fn load_file() /* -> Result<Config, io::Error > */{
             let clean_input = input.trim().to_string();
             let formatted_input = format!("date,{}", clean_input);
             file.write_all(formatted_input.clone().as_bytes()).expect("Failed to write to new file.");
-            file.write_all(b"\n");
+            let formatted_today = format!("\n{},", today);
+            file.write_all(formatted_today.as_bytes());
 
             // count num commas => repeat that many times + 1 for false,false,false,false
-            let mut tasks = formatted_input.split(",").peekable();
+            let mut tasks = clean_input.split(",").peekable();
             while let Some(t) = tasks.next() {
                 if !tasks.peek().is_none() {
                     file.write_all(b"false,");
@@ -85,16 +82,15 @@ fn load_file() /* -> Result<Config, io::Error > */{
             // test: actually read file make sure it works and shit
             let content = fs::read_to_string(opened_file).expect("File read unsucc.");
             println!("{content}");
-/*
-            Config {
-                
-            }
-*/
+
+            /* Config {
+
+            }*/
         }
     };
 }
 
 fn main() {
     let today = start_up();
-    load_file();
+    load_file(today);
 }
