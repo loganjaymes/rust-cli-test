@@ -5,11 +5,20 @@ use std::io::{self, prelude::*};
 use chrono::{Local};
 use csv::{ReaderBuilder, StringRecord};
 
-#[derive(serde::Deserialize, Debug)]
+// #[derive(serde::Deserialize, Debug)]
 struct LGDay {
     date: String,
     // tasks: Vec<String>,
     checklist: HashMap<String, bool>,
+}
+
+impl LGDay {
+    fn build(d: &String, cl: HashMap<String, bool>) -> LGDay { // might need to put as Result<>
+        let date = d.to_string();
+        let checklist = cl;
+
+        LGDay { date, checklist }
+    }
 }
 
 
@@ -26,7 +35,7 @@ fn start_up() -> String {
     today.to_string()
 }
 
-fn init_file(today: String) -> String {
+fn init_file(today: String) -> String { // FIXME change to Result<String, &'static str>
     println!("Locating files...");
 
     let paths = fs::read_dir("./days").unwrap();
@@ -52,14 +61,14 @@ fn init_file(today: String) -> String {
             .read(true)
             .write(true)
             .create(true)
-            .open(new_file.clone()).expect("Failed to create new file.");
+            .open(&new_file).expect("Failed to create new file.");
 
             println!("What tasks would you like to add? (FORMAT: task1,task2,task3,...,taskn)");
             let mut input = String::new();
             io::stdin().read_line(&mut input);
             let clean_input = input.trim().to_string();
             let formatted_input = format!("date,{}", clean_input);
-            file.write_all(formatted_input.clone().as_bytes()).expect("Failed to write to new file.");
+            file.write_all(&formatted_input.as_bytes()).expect("Failed to write to new file.");
             let formatted_today = format!("\n{},", today);
             file.write_all(formatted_today.as_bytes());
 
@@ -92,14 +101,13 @@ fn init_file(today: String) -> String {
         }
     };
 
-    return String::from("Something went wrong :sob:");
+    // return String::from("Something went wrong :sob:");
 }
 
 fn parse_csv(path: String) {
     let mut builder = ReaderBuilder::new();
     builder.double_quote(false);
     let res = builder.from_path(path);
-    // let res = Reader::from_path(path);
     
     if res.is_err() {
         println!("HELP ME HELP ME HELP ME!!!");
@@ -115,10 +123,11 @@ fn parse_csv(path: String) {
     for h in headers.into_iter() {
         v.push(String::from(h));
     }
+    // TODO split into parse_csv and create_lgday?
 
     // println!("DBG: {:?}", v);
     // println!("DBG: v @ i_0 is {}", v.get(0).unwrap());
-    let stored_days = Vec::new();
+    let stored_days: Vec<LGDay> = Vec::new();
     for record in reader.records() {
         let temp = record.unwrap();
         println!("Date: {}", temp.get(0).unwrap());
@@ -127,8 +136,9 @@ fn parse_csv(path: String) {
         println!("{}: {}", v.get(3).unwrap(), temp.get(3).unwrap());
         println!("{}: {}", v.get(4).unwrap(), temp.get(4).unwrap());
 
-        // TODO: 
-        // put into struct
+        // TODO:
+        // make above dynamic (we wont know how many are in records, might be able to do something w len of records? not too sure as of rn)
+        // put into hmap, send date and hmap to struct
         // -> store struct in stored_days by date (["20251214", "20251215", ...]).. or something
         // -> have user edit checklist (hmap) based on date
         // -> ie. load file -> "wat day woul you like to edit? (YYYYMMDD)"
@@ -141,11 +151,10 @@ fn parse_csv(path: String) {
     }
 }
 
-/*
-fn edit_today() -> {
-
+// put ts in lib crate
+fn edit_date() {
+    unimplemented!();
 }
-*/
 
 fn main() {
     let today = start_up();
