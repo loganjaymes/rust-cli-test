@@ -4,23 +4,7 @@ use std::fs;
 use std::io::{self, prelude::*};
 use chrono::{Local};
 use csv::{ReaderBuilder, StringRecord};
-
-// #[derive(serde::Deserialize, Debug)]
-struct LGDay {
-    date: String,
-    // tasks: Vec<String>,
-    checklist: HashMap<String, bool>,
-}
-
-impl LGDay {
-    fn build(d: &String, cl: HashMap<String, bool>) -> LGDay { // might need to put as Result<>
-        let date = d.to_string();
-        let checklist = cl;
-
-        LGDay { date, checklist }
-    }
-}
-
+use dailycli::{LGDay, edit_date};
 
 fn start_up() -> String {
     let uname = users_native::get_current_username();
@@ -104,7 +88,7 @@ fn init_file(today: String) -> String { // FIXME change to Result<String, &'stat
     // return String::from("Something went wrong :sob:");
 }
 
-fn parse_csv(path: String) {
+fn parse_csv(path: String) -> Vec<LGDay> { // essentially whole csv
     let mut builder = ReaderBuilder::new();
     builder.double_quote(false);
     let res = builder.from_path(path);
@@ -146,13 +130,17 @@ fn parse_csv(path: String) {
         // -> list tasks, ask which one to change (so T->F or F->T (literally just set it to not if
         // thats possible in rust))
         // cont til quit
-
-        // let day = LGDay
+        
+        // let day = LGDay;
+        // stored_days.push(day) after each creation of lgday
     }
+    stored_days
 }
 
-// put ts in lib crate
-fn edit_date() {
+fn run(days: Vec<LGDay>) {
+    // acutal logic goes here
+    // have loop cont taking user input
+    // if input !"quit" => call edit_date
     unimplemented!();
 }
 
@@ -160,5 +148,5 @@ fn main() {
     let today = start_up();
     let file_path = init_file(today);
     // println!("{file_path}");
-    parse_csv(file_path);
+    let days = parse_csv(file_path);
 }
