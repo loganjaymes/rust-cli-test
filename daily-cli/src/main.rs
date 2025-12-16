@@ -118,6 +118,7 @@ fn parse_csv(path: String) {
 
     // println!("DBG: {:?}", v);
     // println!("DBG: v @ i_0 is {}", v.get(0).unwrap());
+    let stored_days = Vec::new();
     for record in reader.records() {
         let temp = record.unwrap();
         println!("Date: {}", temp.get(0).unwrap());
@@ -125,6 +126,18 @@ fn parse_csv(path: String) {
         println!("{}: {}", v.get(2).unwrap(), temp.get(2).unwrap());
         println!("{}: {}", v.get(3).unwrap(), temp.get(3).unwrap());
         println!("{}: {}", v.get(4).unwrap(), temp.get(4).unwrap());
+
+        // TODO: 
+        // put into struct
+        // -> store struct in stored_days by date (["20251214", "20251215", ...]).. or something
+        // -> have user edit checklist (hmap) based on date
+        // -> ie. load file -> "wat day woul you like to edit? (YYYYMMDD)"
+        // -> search for day with that date
+        // -> list tasks, ask which one to change (so T->F or F->T (literally just set it to not if
+        // thats possible in rust))
+        // cont til quit
+
+        // let day = LGDay
     }
 }
 
