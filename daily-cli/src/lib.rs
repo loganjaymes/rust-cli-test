@@ -3,7 +3,6 @@ use std::collections::HashMap;
 // #[derive(serde::Deserialize, Debug)]
 pub struct LGDay {
     date: String,
-    // tasks: Vec<String>,
     checklist: HashMap<String, bool>,
 }
 

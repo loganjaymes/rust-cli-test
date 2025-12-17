@@ -141,7 +141,14 @@ fn run(days: Vec<LGDay>) {
     // acutal logic goes here
     // have loop cont taking user input
     // if input !"quit" => call edit_date
-    unimplemented!();
+    /*
+    println!("What date would you like to edit?");
+
+    let mut input = String::new();
+    io::stdin().read_line(&mut input);
+    */
+
+    // edit date => edit task -> edit another task || edit another date
 }
 
 fn main() {
