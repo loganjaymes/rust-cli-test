@@ -215,7 +215,6 @@ fn run(mut days: Vec<LGDay>, path: String) {
     new_header.extend(header_to_vec);
     // dont need to convert from vector ["date", "t1", ..., "tn"] since csv hadnles it
     
-    /*
     let mut res = Writer::from_path(path);
     if res.is_err() {
         println!("HELP ME HELP ME HELP ME!!!");
@@ -224,17 +223,14 @@ fn run(mut days: Vec<LGDay>, path: String) {
 
     let mut writer = res.unwrap();
     writer.write_record(&new_header);
-    */
     // rewrite entire 'days' vector from memory since we cannot write to a specific place in file
     for d in &days { 
         println!("{:?}", d.checklist);
-        /*
         let mut new_record: Vec<String> = Vec::new();
         new_record.push(String::from(d.date.clone()));
         let new_vals: Vec<String> = d.checklist.values().cloned().collect();
         new_record.extend(new_vals);
         writer.write_record(&new_record);
-        */
     }
 
     /*
