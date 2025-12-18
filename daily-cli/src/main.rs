@@ -5,7 +5,7 @@ use std::ffi::OsStr;
 use std::fs;
 use std::io::{self, prelude::*};
 use chrono::{Local};
-use csv::{ReaderBuilder, StringRecord};
+use csv::{Writer, ReaderBuilder, StringRecord};
 use dailycli::{LGDay, edit_date};
 
 fn start_up() -> String {
@@ -119,14 +119,6 @@ fn parse_csv(path: String) -> Vec<LGDay> { // essentially whole csv as a vector 
 
         let mut tasks: HashMap<String, String> = header_vals.clone().into_iter().zip(record_vals.into_iter().skip(1)).collect(); // each day has own checklist
 
-        // println!("TASKMAP IS : {:?}", tasks);
-
-        // annoying: r_vs technically a bool since we are skipping date but because of CSV, unless
-        // i want to remove date before converting both, it has to be a string
-        // let str_to_bool = matches!(condition, "true");
-
-        // feature not a bug: allows for 'halfway' state
-        // in that case i should realistically make it an enum, but i also am going to Durk My Snurk! if i have to refactor this tonight
         let day = LGDay {
             date: record_date.to_string(),
             checklist: tasks,
@@ -137,10 +129,10 @@ fn parse_csv(path: String) -> Vec<LGDay> { // essentially whole csv as a vector 
     stored_days
 }
 
-fn run(days: Vec<LGDay>) {
-    // start small: edit one date and one task at a time
+fn run(days: Vec<LGDay>, path: String) {
+    // TODO have editing a date and editing the tasks separate funcs in lib.rs
+    // implementing it this way likely makes looping for input a lot easier.
     let mut stored_day = LGDay { date: String::from(""), checklist: HashMap::new()}; // FIXME make def vals in struct
-    // TODO put in lib.rs? i think
     println!("What date would you like to edit?");
     let mut input = String::new();
     io::stdin().read_line(&mut input);
@@ -182,13 +174,21 @@ fn run(days: Vec<LGDay>) {
 
     println!("Value of checklist after changing: {:?}", stored_day.checklist);
 
+    let mut writer = WriterBuilder:from_path(path)?;
+    writer.
+
     /*
      * logic:
-     * update hmap val for stored_task
-     * write hmap record to CSV
-     * ???
-     * profit
-     * done
+     * update hmap val for stored_task      DONE
+     * write hmap record to CSV             rewrite everything from structs
+     *
+     *                                      write header
+     *                                      for day in lgday
+     *                                          write day1.date, checklist.vals
+     *
+     * ???                                  ????
+     * profit                               PLEASE
+     * done                                 ALSO PLEASE
      */
 
 
@@ -203,7 +203,7 @@ fn main() {
     let today = start_up();
     let file_path = init_file(today);
     // println!("{file_path}");
-    let days = parse_csv(file_path);
+    let days = parse_csv(&file_path);
     // implement view after selecting date
-    run(days);
+    run(days, &file_path);
 }
