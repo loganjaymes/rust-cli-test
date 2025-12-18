@@ -1,3 +1,5 @@
+// REMOVE THIS LATER
+#![allow(unused)]
 use std::collections::HashMap;
 use std::ffi::OsStr;
 use std::fs;
@@ -88,7 +90,7 @@ fn init_file(today: String) -> String { // FIXME change to Result<String, &'stat
     // return String::from("Something went wrong :sob:");
 }
 
-fn parse_csv(path: String) -> Vec<LGDay> { // essentially whole csv
+fn parse_csv(path: String) -> Vec<LGDay> { // essentially whole csv as a vector w/ DS
     let mut builder = ReaderBuilder::new();
     builder.double_quote(false);
     let res = builder.from_path(path);
@@ -107,7 +109,6 @@ fn parse_csv(path: String) -> Vec<LGDay> { // essentially whole csv
     for h in headers.into_iter().skip(1) {
         header_vals.push(String::from(h));
     }
-    // TODO split into parse_csv and create_lgday?
 
     let mut stored_days: Vec<LGDay> = Vec::new();
     for record in reader.records() {
@@ -125,13 +126,11 @@ fn parse_csv(path: String) -> Vec<LGDay> { // essentially whole csv
         // let str_to_bool = matches!(condition, "true");
 
         // feature not a bug: allows for 'halfway' state
-        // in that case i should make it an enum but i also am going to Durk My Snurk! if i have to
-        // refactor this tonight
+        // in that case i should realistically make it an enum, but i also am going to Durk My Snurk! if i have to refactor this tonight
         let day = LGDay {
             date: record_date.to_string(),
             checklist: tasks,
         };
-        println!("{}", &day.date);
 
         stored_days.push(day); // after each creation of lgday
     }
@@ -139,6 +138,40 @@ fn parse_csv(path: String) -> Vec<LGDay> { // essentially whole csv
 }
 
 fn run(days: Vec<LGDay>) {
+    // start small: edit one date and one task at a time
+    let mut stored_day = LGDay { date: String::from(""), checklist: HashMap::new()}; // FIXME make def vals in struct
+    
+    println!("What date would you like to edit?");
+    let mut input = String::new();
+    io::stdin().read_line(&mut input);
+    let clean_input = input.trim().to_string();
+
+    for day in days {
+        if day.date == clean_input {
+            stored_day = day;
+        } 
+        /*
+        match day.date {
+            clean_input => { stored_day = day }
+            _ => { panic!("Could ")
+        }
+        */ 
+    }
+
+    let mut stored_task = String::new();
+    println!("What task would you like to edit?");
+    let mut input = String::new();
+    io::stdin().read_line(&mut input);
+    let clean_input = input.trim().to_string();
+
+    for (key, val) in stored_day.checklist.iter() {
+        match key {
+            clean_input => { stored_task = key.to_string() },
+            _ => { println!("Could not find task to edit!") },
+        }
+    }
+
+
     // acutal logic goes here
     // have loop cont taking user input
     // if input !"quit" => call edit_date
@@ -157,4 +190,5 @@ fn main() {
     let file_path = init_file(today);
     // println!("{file_path}");
     let days = parse_csv(file_path);
+    run(days);
 }

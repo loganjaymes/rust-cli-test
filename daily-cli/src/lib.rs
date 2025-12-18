@@ -15,6 +15,15 @@ impl LGDay {
     }
 }
 
+/*
+impl std::fmt::Display for LGDay {
+    fn fmt(&std::fmt::self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        println!("Date: {}", date);
+        println!("Tasks: ")
+    }
+}
+*/
+
 pub fn edit_date(date: String) -> LGDay {
 
     // search for day to edit by string)
