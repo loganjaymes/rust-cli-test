@@ -117,7 +117,7 @@ fn parse_csv(path: String) -> Vec<LGDay> { // essentially whole csv as a vector 
         let record_date = record_vals[0].clone(); // annoying but we live
         // above converts StringRecord to String
 
-        let mut tasks: HashMap<String, String> = header_vals.clone().into_iter().zip(record_vals.into_iter()).collect(); // each day has own checklist
+        let mut tasks: HashMap<String, String> = header_vals.clone().into_iter().zip(record_vals.into_iter().skip(1)).collect(); // each day has own checklist
 
         // println!("TASKMAP IS : {:?}", tasks);
 
@@ -158,6 +158,8 @@ fn run(days: Vec<LGDay>) {
         */ 
     }
 
+    println!("For day {}, possible tasks are {:?}", &stored_day.date, &stored_day.checklist);
+
     let mut stored_task = String::new();
     println!("What task would you like to edit?");
     let mut input = String::new();
@@ -169,33 +171,13 @@ fn run(days: Vec<LGDay>) {
     } else {
         panic!("Could not find task {}", clean_input);
     }
-/*
-    for (key, val) in stored_day.checklist.iter() {
-        if key.to_string() == clean_input {
-            stored_task = clean_input.clone();
-        }
-        /*
-        match key.to_string() {
-            clean_input => { stored_task = key.to_string() },
-            _ => { println!("Could not find task to edit!") },
-        }
-        */
-    }
-*/
 
     println!("Editing {}...", stored_task);
+    // println!("")
 
 
-    // acutal logic goes here
-    // have loop cont taking user input
+    // TODO have loop cont taking user input
     // if input !"quit" => call edit_date
-    /*
-    println!("What date would you like to edit?");
-
-    let mut input = String::new();
-    io::stdin().read_line(&mut input);
-    */
-
     // edit date => edit task -> edit another task || edit another date
 }
 
