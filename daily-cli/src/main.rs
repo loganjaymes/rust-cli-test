@@ -222,9 +222,16 @@ fn run(days: Vec<LGDay>, path: String) {
     new_header.extend(header_to_vec);
     // dont need to convert from vector ["date", "t1", ..., "tn"] since csv hadnles it
     println!("new header is {:?}", new_header);
+    
+    let mut res = Writer::from_path(path);
+
+    if res.is_err() {
+        println!("HELP ME HELP ME HELP ME!!!");
+        std::process::exit(9);
+    }
+    let mut writer = res.unwrap();
+    writer.write_record(&new_header);
     /*
-    let mut writer = Writer::from_path(path);
-    writer.write_record(&["date", keys]);
     for d in days {
         let vals = stored_day.checklist.values().cloned().collect();
     }
