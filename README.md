@@ -1,5 +1,5 @@
 # rust-daily-cli
-A daily to-do list CLI app.
+A daily habit-tracker CLI app.
 
 # Why?
 On my journey of teaching myself Rust through The Rust Programming Language, Rust By Example, and supplemental YouTube videos, I wanted to create a CLI app that uses the fundamentals of any programming language; that is, control flow, file I/O, data structures, etc. </br>
