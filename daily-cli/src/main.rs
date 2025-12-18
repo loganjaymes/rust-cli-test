@@ -62,9 +62,9 @@ fn init_file(today: String) -> String { // FIXME change to Result<String, &'stat
             let mut tasks = clean_input.split(",").peekable();
             while let Some(t) = tasks.next() {
                 if !tasks.peek().is_none() {
-                    file.write_all(b"false,");
+                    file.write_all(b"incomplete,");
                 } else {
-                    file.write_all(b"false");
+                    file.write_all(b"incomplete");
                 }
             }
 
@@ -149,15 +149,16 @@ fn run(days: Vec<LGDay>) {
     for day in days {
         if day.date == clean_input {
             stored_day = day;
-        } // FIXME Error handling - does nothing if day not found
-        /*
-        match day.date {
-            clean_input => { stored_day = day }
-            _ => { panic!("Could ")
-        }
-        */ 
+        } 
+    }
+    
+    let scuffed_error = stored_day.date.to_string(); // FIXME figure out a better way to handle
+                                                     // this lmfao
+    if scuffed_error == "" {
+        panic!("Date not found");
     }
 
+    // TODO pretty print struct fields and hashmap especially (ie. linebreaks)
     println!("For day {}, possible tasks are {:?}", &stored_day.date, &stored_day.checklist);
 
     let mut stored_task = String::new();
@@ -172,8 +173,16 @@ fn run(days: Vec<LGDay>) {
         panic!("Could not find task {}", clean_input);
     }
 
-    println!("Editing {}...", stored_task);
-    // println!("")
+    println!("What value would you like to set it to? (complete, incomplete, in-progress)")
+
+    /*
+     * logic:
+     * update hmap val for stored_task
+     * write hmap record to CSV
+     * ???
+     * profit
+     * done
+     */
 
 
     // TODO have loop cont taking user input
@@ -181,10 +190,13 @@ fn run(days: Vec<LGDay>) {
     // edit date => edit task -> edit another task || edit another date
 }
 
+// fn write_csv()
+
 fn main() {
     let today = start_up();
     let file_path = init_file(today);
     // println!("{file_path}");
     let days = parse_csv(file_path);
+    // implement view after selecting date
     run(days);
 }
