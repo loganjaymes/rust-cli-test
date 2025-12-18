@@ -128,39 +128,21 @@ fn parse_csv(path: &String, today: &String) -> Vec<LGDay> { // essentially whole
     }
 
     if today_found == false {
-        // FIXME, might be a better way of doing this
-        // the issue is that, since i want to avoid iterating over every record again,
-
-        // best solution? find a way to do it in the previous loop, but since we are creating the
-        // vector as we iterate, checking for the date before it even has the chance to be
-        // initialized is an issue.
-        /*
-        let curr = stored_days.last().clone();
-        curr.unwrap().date = today.to_string();
-        for val in curr.unwrap().checklist.values_mut() {
-            *val = String::from("incomplete");
-        }
-        today_found = true; // should consume but just in case
-        stored_days.push(curr.unwrap().clone());
-        */
-
-
-        // im a fucking retard
         let mut record_vals: Vec<String> = Vec::new();
-        for h in header_vals.iter().skip(1) {
+        for h in header_vals.iter() {
             record_vals.push(String::from("incomplete"));
         }
 
-        let mut tasks: HashMap<String, String> = header_vals.clone().into_iter().zip(record_vals.into_iter().skip(1)).collect(); // each day has own checklist
+        let mut tasks: HashMap<String, String> = header_vals.clone().into_iter().zip(record_vals.into_iter()).collect(); // each day has own checklist
 
         let day = LGDay {
             date: today.to_string(),
             checklist: tasks,
         };
 
-        stored_days.push(day);
-
+        stored_days.push(day); // dont need to update today_found since itll be dropped after func
     }
+
     stored_days
 }
 
