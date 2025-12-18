@@ -149,7 +149,7 @@ fn run(days: Vec<LGDay>) {
     for day in days {
         if day.date == clean_input {
             stored_day = day;
-        } 
+        } // FIXME Error handling - does nothing if day not found
         /*
         match day.date {
             clean_input => { stored_day = day }
@@ -164,12 +164,26 @@ fn run(days: Vec<LGDay>) {
     io::stdin().read_line(&mut input);
     let clean_input = input.trim().to_string();
 
+    if stored_day.checklist.contains_key(&clean_input) {
+        stored_task = clean_input.clone();
+    } else {
+        panic!("Could not find task {}", clean_input);
+    }
+/*
     for (key, val) in stored_day.checklist.iter() {
-        match key {
+        if key.to_string() == clean_input {
+            stored_task = clean_input.clone();
+        }
+        /*
+        match key.to_string() {
             clean_input => { stored_task = key.to_string() },
             _ => { println!("Could not find task to edit!") },
         }
+        */
     }
+*/
+
+    println!("Editing {}...", stored_task);
 
 
     // acutal logic goes here
