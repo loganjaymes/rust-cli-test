@@ -146,7 +146,7 @@ fn parse_csv(path: &String, today: &String) -> Vec<LGDay> { // essentially whole
     stored_days
 }
 
-fn run(days: Vec<LGDay>, path: String) {
+fn run(mut days: Vec<LGDay>, path: String) {
     // TODO have editing a date and editing the tasks separate funcs in lib.rs
     // implementing it this way likely makes looping for input a lot easier.
     let mut stored_day = LGDay { date: String::from(""), checklist: HashMap::new()}; // FIXME make def vals in struct
@@ -166,12 +166,12 @@ fn run(days: Vec<LGDay>, path: String) {
     io::stdin().read_line(&mut input);
     let clean_input = input.trim().to_string();
 
-    for day in days {
+    for day in &days {
         if day.date == clean_input {
-            stored_day = day;
+            stored_day = day.clone();
         } 
     }
-
+    
     let scuffed_error = stored_day.date.to_string(); // FIXME figure out a better way to handle
                                                      // this lmfao
     if scuffed_error == "" {
@@ -200,42 +200,42 @@ fn run(days: Vec<LGDay>, path: String) {
     
     *stored_day.checklist.get_mut(&stored_task).unwrap() = clean_input;
 
-    println!("Value of checklist after changing: {:?}", stored_day.checklist);
+    println!("Value of checklist after changing: {:?}", &stored_day.checklist);
 
-    /* current structure
-     * date
-     * {t1 : i,
-     * t2 : i,
-     * ...
-     * tn : i}
-     *
-     *
-     * need:
-     *
-     * write "'date',cl.keys"
-     * write "date,cl.vals"
-     */
-    
+    // replace in vector
+    for day in &mut days {
+        if day.date == stored_day.date {
+            *day = stored_day.clone();
+        }
+    }
+
     let mut new_header: Vec<String> = Vec::new();
     new_header.push(String::from("date"));
     let header_to_vec: Vec<String> = stored_day.checklist.keys().cloned().collect();
     new_header.extend(header_to_vec);
     // dont need to convert from vector ["date", "t1", ..., "tn"] since csv hadnles it
-    println!("new header is {:?}", new_header);
     
+    /*
     let mut res = Writer::from_path(path);
-
     if res.is_err() {
         println!("HELP ME HELP ME HELP ME!!!");
         std::process::exit(9);
     }
+
     let mut writer = res.unwrap();
     writer.write_record(&new_header);
-    /*
-    for d in days {
-        let vals = stored_day.checklist.values().cloned().collect();
-    }
     */
+    // rewrite entire 'days' vector from memory since we cannot write to a specific place in file
+    for d in &days { 
+        println!("{:?}", d.checklist);
+        /*
+        let mut new_record: Vec<String> = Vec::new();
+        new_record.push(String::from(d.date.clone()));
+        let new_vals: Vec<String> = d.checklist.values().cloned().collect();
+        new_record.extend(new_vals);
+        writer.write_record(&new_record);
+        */
+    }
 
     /*
      * logic:
