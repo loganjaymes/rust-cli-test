@@ -5,7 +5,7 @@ use std::ffi::OsStr;
 use std::fs;
 use std::io::{self, prelude::*};
 use chrono::{Local};
-use csv::{WriterBuilder, ReaderBuilder, StringRecord};
+use csv::{Writer, ReaderBuilder, StringRecord};
 use dailycli::{LGDay, edit_date};
 
 fn start_up() -> String {
@@ -172,9 +172,6 @@ fn run(days: Vec<LGDay>, path: String) {
         } 
     }
 
-    // check if today in vector, if not then auto add it
-
-    
     let scuffed_error = stored_day.date.to_string(); // FIXME figure out a better way to handle
                                                      // this lmfao
     if scuffed_error == "" {
@@ -205,13 +202,38 @@ fn run(days: Vec<LGDay>, path: String) {
 
     println!("Value of checklist after changing: {:?}", stored_day.checklist);
 
-    // let mut writer = WriterBuilder::from_path(path)?;
-    // writer.
+    let mut writer = Writer::from_path(path);
+
+    /* current structure
+     * date
+     * {t1 : i,
+     * t2 : i,
+     * ...
+     * tn : i}
+     *
+     *
+     * need:
+     *
+     * write "'date',cl.keys"
+     * write "date,cl.vals"
+     */
+    let mut new_header: Vec<String> = Vec::new();
+    new_header.push(String::from("date"));
+    let header_to_vec: Vec<String> = stored_day.checklist.keys().cloned().collect();
+    new_header.extend(header_to_vec);
+    // dont need to convert from vector ["date", "t1", ..., "tn"] since csv hadnles it
+    println!("new header is {:?}", new_header);
+    /*
+    writer.write_record(&["date", keys]);
+    for d in days {
+        let vals = stored_day.checklist.values().cloned().collect();
+    }
+    */
 
     /*
      * logic:
      * update hmap val for stored_task      DONE
-     * write hmap record to CSV             rewrite everything from structs
+     * iterate over days and rewrite all    HELP
      *
      *                                      write header
      *                                      for day in lgday
